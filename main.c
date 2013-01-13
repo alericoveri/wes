@@ -1,5 +1,5 @@
 /*
- * Copyright © 2005 Alejandro Ricoveri <alejandroricoveri@gmail.com>
+ * Copyright ¬© 2005 Alejandro Ricoveri <alejandroricoveri@gmail.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,310 +17,287 @@
  *
  */
 
-/*	WORDSORTER: ANALIZADOR LEXICO V1.0 (C”DIGO FUENTE)
-	REALIZADO Y CODIFICADO POR ALEJANDRO RIC”VERI. C.I. : 16149964
-	UNIVERSIDAD RAFAEL BELLOSO CHACÕN
-	FACULTAD DE INGENIERÕA 
-	ESCUELA DE COMPUTACI”N
-	C¡TEDRA: ESTRUCTURA DE LENGUAJES Y COMPILADORES
-	SECCI”N: C611
+/*	WORDSORTER: ANALIZADOR LEXICO V1.0 (C√ìDIGO FUENTE)
+	REALIZADO Y CODIFICADO POR ALEJANDRO RIC√ìVERI. C.I. : 16149964
+	UNIVERSIDAD RAFAEL BELLOSO CHAC√çN
+	FACULTAD DE INGENIER√çA
+	ESCUELA DE COMPUTACI√ìN
+	C√ÅTEDRA: ESTRUCTURA DE LENGUAJES Y COMPILADORES
+	SECCI√ìN: C611
 */
-	
+
 #include "wes.h" // STANDARD HEADER DEL PROGRAMA
 
-/* M”DULOS DE LA CLASE PRINCIPAL QUE USA EL PROGRAMA (wordTable)*/
+/* M√ìDULOS DE LA CLASE PRINCIPAL QUE USA EL PROGRAMA (wordTable)*/
 
-/*	FUNCI”N QUE REALIZA LA IMPRESION DE LA ESTRUCTURA DE DATOS 
-	MANEJADO POR wordTable 
+/*	FUNCI√ìN QUE REALIZA LA IMPRESION DE LA ESTRUCTURA DE DATOS
+	MANEJADO POR wordTable
 */
 void wordTable::printTable()
 {
-	tempWord = firstWord;
+    tempWord = firstWord;
 
-	printf("Tabla de palabras:\n\n");
+    printf("Tabla de palabras:\n\n");
 
-	while(tempWord != NULL)
-	{
+    while(tempWord != NULL) {
 
-		printf("* %s @:", tempWord->wordString);
-		tempLine = tempWord->firstLine;
+        printf("* %s @:", tempWord->wordString);
 
-		while(tempLine != NULL) 
-		{
-			if(tempLine->nextLine == NULL)
-			printf("%d", tempLine->lineNum);
-			else
-			printf("%d, ", tempLine->lineNum);	
+        tempLine = tempWord->firstLine;
 
-			tempLine = tempLine->nextLine;
-		}
+        while(tempLine != NULL)
+        {
+            if(tempLine->nextLine == NULL)
+                printf("%d", tempLine->lineNum);
+            else
+                printf("%d, ", tempLine->lineNum);
 
-		tempWord = tempWord->nextWord;
-		printf("\n");
-	}
+            tempLine = tempLine->nextLine;
+        }
+
+        tempWord = tempWord->nextWord;
+        printf("\n");
+    }
 }
 
 /*	CONSTRUCTOR DE wordTable */
 wordTable::wordTable()
 {
-
-	firstWord = NULL;
-
+    firstWord = NULL;
 }
 
-/*	FUNCION QUE REALIZA LA INSERCION DE LEXEMAS O PALABRAS 
+/*	FUNCION QUE REALIZA LA INSERCION DE LEXEMAS O PALABRAS
 	EN LA ESTRUCTURA DE DATOS
 */
 void wordTable::insertWord(char *inWord)
 {
-	
-	
-	tempWord = new Word;
-	strncpy ( tempWord->wordString, inWord , MAX_WORD_SIZE ); 
-	tempWord->firstLine = NULL;
+    tempWord = new Word;
+    strncpy ( tempWord->wordString, inWord , MAX_WORD_SIZE );
+    tempWord->firstLine = NULL;
 
-			
-	if(firstWord == NULL){
-		
-		tempWord->nextWord = firstWord;
-		firstWord = tempWord;
+    if(firstWord == NULL)
+    {
+        tempWord->nextWord = firstWord;
+        firstWord = tempWord;
 
+        if(wsParamVerbose) {
+            printf("Ingresando en la tabla de palabras: %s\n",
+                tempWord->wordString);
+        }
+    }
+    else {
 
-		if(wsParamVerbose){
-			printf("Ingresando en la tabla de palabras: %s\n", tempWord->wordString); 
-			
-		}
+        Word *cmpWord;
+        bool wordEquals;
+        cmpWord = firstWord;
 
-	}
-	else {
-	
-		Word *cmpWord; 
-		bool wordEquals;
-		cmpWord = firstWord;	
+        while (cmpWord != NULL)
+        {
+            wordEquals = FALSE ;
 
-		while (cmpWord != NULL){
+            if(!strcmp(cmpWord->wordString, tempWord->wordString))
+            {
+                if(wsParamVerbose)
+                    printf(">Palabra '%s' coincide con otra. Palabra Descartada\n", tempWord->wordString);
 
-		wordEquals = FALSE ;
+                wordEquals = TRUE;
+                palDesc++;
+                break;
 
-			if(!strcmp(cmpWord->wordString, tempWord->wordString)){
-
-				if(wsParamVerbose)
-					printf(">Palabra '%s' coincide con otra. Palabra Descartada\n", tempWord->wordString);
-
-				wordEquals = TRUE;
-				palDesc++;
-				break;
-				
-			}
-			else cmpWord= cmpWord->nextWord;			
-			
-		}		
-		
-
-		if(!wordEquals){
-			
-			tempWord->nextWord = firstWord;
-			firstWord = tempWord;
-	
-			if(wsParamVerbose)
-			printf("Ingresado en la tabla de palabras: %s\n", tempWord->wordString); 
-		
-		}
-
-	}
-	
-	wordSort();
+            } else cmpWord= cmpWord->nextWord;
+        }
 
 
+        if(!wordEquals)
+        {
+            tempWord->nextWord = firstWord;
+            firstWord = tempWord;
+
+            if(wsParamVerbose)
+                printf("Ingresado en la tabla de palabras: %s\n", tempWord->wordString);
+        }
+    }
+
+    /* */
+    wordSort();
 }
 
-/*	FUNCION QUE SE ENCARGA DE LA INSERCI”N DE LINEAS DE TEXTO
-	PARA SU POSTERIOR AN¡LISIS CON RESPECTO A LA ESTRUCTURA 
+/*	FUNCION QUE SE ENCARGA DE LA INSERCI√ìN DE LINEAS DE TEXTO
+	PARA SU POSTERIOR AN√ÅLISIS CON RESPECTO A LA ESTRUCTURA
 	DE DATOS DE wordTable
 */
-void wordTable::insertLine(char *inLine, int numLine){
+void wordTable::insertLine(char *inLine, int numLine)
+{
 
-	if(wsParamVerbose)
-		printf("Procesando linea ... \n");
+    if(wsParamVerbose)
+        printf("Procesando linea ... \n");
 
-	ofstream SwapWrite;
-	SwapWrite.open("SWAP");
+    ofstream SwapWrite;
+    SwapWrite.open("SWAP");
 
-	if(wsParamVerbose)
-		printf("Creando archivo de swap ...\n");
+    if(wsParamVerbose)
+        printf("Creando archivo de swap ...\n");
 
-	SwapWrite << inLine <<endl;
+    SwapWrite << inLine <<endl;
 
-	SwapWrite.close();
-	
-	ifstream SwapRead;
-	SwapRead.open("SWAP");
+    SwapWrite.close();
 
-	char tempLineWord[MAX_WORD_SIZE];
+    ifstream SwapRead;
+    SwapRead.open("SWAP");
 
-	Line *cmpLine;
-	bool lineExists;
+    char tempLineWord[MAX_WORD_SIZE];
 
-	while (!SwapRead.eof()){
+    Line *cmpLine;
+    bool lineExists;
 
-		tempWord = firstWord;
+    while (!SwapRead.eof()) {
 
-		while(tempWord != NULL){
+        tempWord = firstWord;
 
-			if(!strcmp(tempWord->wordString,tempLineWord)){ 
-			
-				
-				cmpLine = tempWord->firstLine;
-				lineExists = FALSE;
+        while(tempWord != NULL) {
 
-				if(cmpLine != NULL){
+            if(!strcmp(tempWord->wordString,tempLineWord))
+            {
+                cmpLine = tempWord->firstLine;
+                lineExists = FALSE;
 
-					if(cmpLine->lineNum == numLine)
-						lineExists = TRUE;
-				}
+                if(cmpLine != NULL) {
 
-				if(!lineExists){
+                    if(cmpLine->lineNum == numLine)
+                        lineExists = TRUE;
+                }
 
-					tempLine = new Line;
-					tempLine->lineNum = numLine;
+                if(!lineExists) {
 
-					tempLine->nextLine = tempWord->firstLine;
-					tempWord->firstLine = tempLine;
-				} 
+                    tempLine = new Line;
+                    tempLine->lineNum = numLine;
 
-			break;
+                    tempLine->nextLine = tempWord->firstLine;
+                    tempWord->firstLine = tempLine;
+                }
 
-			}
+                break;
+            }
+            else tempWord = tempWord->nextWord;
+        }
 
-			else tempWord = tempWord->nextWord;
+        //
+        SwapRead >> tempLineWord;
+    }
 
-		}
-
-		SwapRead >> tempLineWord;
-		
-	}
-	
-	lineSort();
-
+    //
+    lineSort();
 }
 
-/* FUNCION QUE SE ENCARGA DE ORDENAR LAS PALABRAS 
-	DENTRO DE LA ESTRUCTURA DE DATOS 
+/* FUNCION QUE SE ENCARGA DE ORDENAR LAS PALABRAS
+	DENTRO DE LA ESTRUCTURA DE DATOS
 */
 void wordTable::wordSort()
 {
+    char tmpString[MAX_WORD_SIZE];
+    Word *alphaWord;
 
-	char tmpString[MAX_WORD_SIZE];
-	Word *alphaWord;
+    tempWord = firstWord;
+    alphaWord = firstWord->nextWord;
 
-	tempWord = firstWord;
-	alphaWord = firstWord->nextWord;
+    if( firstWord != NULL)
+    {
+        while (alphaWord != NULL) {
 
-	if( firstWord != NULL){
+            if( strcmp(tempWord->wordString, alphaWord->wordString) > 0) {
 
-		while (alphaWord != NULL){
+                strncpy(tmpString,alphaWord->wordString,MAX_WORD_SIZE);
+                strncpy(alphaWord->wordString,tempWord->wordString,MAX_WORD_SIZE);
+                strncpy(tempWord->wordString,tmpString,MAX_WORD_SIZE);
 
-			if( strcmp(tempWord->wordString, alphaWord->wordString) > 0){
+                tempWord = tempWord->nextWord;
+                alphaWord = alphaWord->nextWord;
 
-				strncpy(tmpString,alphaWord->wordString,MAX_WORD_SIZE);
-				strncpy(alphaWord->wordString,tempWord->wordString,MAX_WORD_SIZE);
-				strncpy(tempWord->wordString,tmpString,MAX_WORD_SIZE);
-
-				tempWord = tempWord->nextWord;
-				alphaWord = alphaWord->nextWord;
-
-			}
-			else break;
-				
-		}
-	}
-
-
+            } else break;
+        }
+    }
 }
 
-/*	FUNCION QUE SE ENCARGA DE ORDENAR LOS N⁄MEROS 
-	DE LINEA POR CADA PALABRA QUE SE ENCUENTRE EN 
-	LA ESTRUCTURA DE DATOS 
+/*	FUNCION QUE SE ENCARGA DE ORDENAR LOS N√öMEROS
+	DE LINEA POR CADA PALABRA QUE SE ENCUENTRE EN
+	LA ESTRUCTURA DE DATOS
 */
-void wordTable::lineSort(){
-	
-	tempWord = firstWord;
-	tempLine = firstWord->firstLine;
+void wordTable::lineSort()
+{
+    tempWord = firstWord;
+    tempLine = firstWord->firstLine;
 
-	int tmpLineNum;
+    int tmpLineNum;
 
-	Line *alphaLine;
+    Line *alphaLine;
 
-	while( tempWord != NULL){
+    while( tempWord != NULL) {
 
-		tempLine = tempWord->firstLine;
+        tempLine = tempWord->firstLine;
 
-		if(tempLine != NULL){
-			
-			alphaLine = tempLine->nextLine;
-			
-			while(alphaLine != NULL){
+        if(tempLine != NULL) {
 
-				if( tempLine->lineNum > alphaLine->lineNum){
+            alphaLine = tempLine->nextLine;
 
-					tmpLineNum = alphaLine->lineNum;
-					alphaLine->lineNum = tempLine->lineNum;
-					tempLine->lineNum = tmpLineNum;
-					tempLine = tempLine->nextLine;
-					alphaLine = alphaLine->nextLine;
+            while(alphaLine != NULL) {
 
-				}
+                if( tempLine->lineNum > alphaLine->lineNum) {
 
-				else  break;
-			}
-		
-		}
+                    tmpLineNum = alphaLine->lineNum;
+                    alphaLine->lineNum = tempLine->lineNum;
+                    tempLine->lineNum = tmpLineNum;
+                    tempLine = tempLine->nextLine;
+                    alphaLine = alphaLine->nextLine;
 
-		tempWord  = tempWord->nextWord;
-		
-	}
+                }
 
+                else  break;
+            }
+        }
+
+        tempWord  = tempWord->nextWord;
+    }
 }
 
-/*	FUNCION QUE SE ENCARGA DE ESCRIBIR 
+/*	FUNCION QUE SE ENCARGA DE ESCRIBIR
 	A PARTIR DE LA ESTRUCTURA DE DATOS
 	DE wordTable EL ARCHIVO DE SALIDA
-	CON SUS RESPECTIVOS RESULTADOS 
+	CON SUS RESPECTIVOS RESULTADOS
 */
-void wordTable::writeOutputFile(){
+void wordTable::writeOutputFile()
+{
+    OutputFile.open("output_ws.wsd");
+    OutputFile.setf(ios::fixed);
 
-	OutputFile.open("output_ws.wsd");
-	OutputFile.setf(ios::fixed);
-	
-	OutputFile <<	"WORDSORTER: ANALIZADOR LEXICO V1.0 (JUN 2005)\n"
-					"Output File: output_ws.wsd\n"
-					"Descripcion: archivo de salida de " << FileString << "\n" 
-				<< endl;
+    OutputFile <<	"WORDSORTER: ANALIZADOR LEXICO V1.0 (JUN 2005)\n"
+               "Output File: output_ws.wsd\n"
+               "Descripcion: archivo de salida de " << FileString << "\n"
+               << endl;
 
-	OutputFile <<	OUTPUTFILE_SEPARATORLINE	<<endl;
+    OutputFile <<	OUTPUTFILE_SEPARATORLINE	<<endl;
 
-	tempWord = firstWord;
-	
-	while(tempWord != NULL){
+    tempWord = firstWord;
 
-		tempLine = tempWord->firstLine;
+    while(tempWord != NULL) {
 
-		OutputFile << "* " << tempWord->wordString << " @: ";
+        tempLine = tempWord->firstLine;
 
-		while(tempLine != NULL){
+        OutputFile << "* " << tempWord->wordString << " @: ";
 
-			if(tempLine->nextLine != NULL)
-				OutputFile << tempLine->lineNum << " ,";
-			else
-				OutputFile << tempLine->lineNum << endl;
+        while(tempLine != NULL) {
 
-			tempLine = tempLine->nextLine;
-		}
+            if(tempLine->nextLine != NULL)
+                OutputFile << tempLine->lineNum << " ,";
+            else
+                OutputFile << tempLine->lineNum << endl;
 
-		tempWord = tempWord->nextWord;
-	}
+            tempLine = tempLine->nextLine;
+        }
 
-	OutputFile << OUTPUTFILE_SEPARATORLINE	<<endl;
+        tempWord = tempWord->nextWord;
+    }
+
+    OutputFile << OUTPUTFILE_SEPARATORLINE	<<endl;
 
 }
 
@@ -329,115 +306,104 @@ void wordTable::writeOutputFile(){
 /*	FUNCION QUE SE ENCARGA DE IMPRIMIR EL SPLASH
 	O BIEN LA PRESENTACION DEL PROGRAMA
 */
-void wsSplash()	
+void wsSplash()
 {
-		
-	system( "cls" );
-
-	SetConsoleTextAttribute(hConsole, COLOR_FOREGROUND_RED);
-	printf( "WORDSORTER: ANALIZADOR LEXICO V1.0 (JUN 2005)");
-	
-	SetConsoleTextAttribute( hConsole, COLOR_DEFAULT );
-	printf(	"\nDisenado y codificado por Alejandro Ricoveri (C.I. 16149964)"
-			"\nUniversidad Rafael Belloso Chacin (URBE)"
-			"\nFacultad de Ingenieria"
-			"\nEscuela de Computacion"
-			"\nCatedra: Estructura de Lenguajes y Compiladores\n\n"
-			);	
+    printf( "WORDSORTER: ANALIZADOR LEXICO V1.0 (JUN 2005)");
+    printf(	"\nDisenado y codificado por Alejandro Ricoveri (C.I. 16149964)"
+            "\nUniversidad Rafael Belloso Chacin (URBE)"
+            "\nFacultad de Ingenieria"
+            "\nEscuela de Computacion"
+            "\nCatedra: Estructura de Lenguajes y Compiladores\n\n"
+          );
 }
 
 
 /*	FUNCION QUE SE ENCARGA DE PROCESAR
-	LOS PARAMETROS DE ENTRADA A PARTIR 
-	DEL COMMAND LINE EN LA EJECUCI”N
+	LOS PARAMETROS DE ENTRADA A PARTIR
+	DEL COMMAND LINE EN LA EJECUCI√ìN
 	DEL PROGRAMA
 */
-bool checkParameters(	char *param[], 
-						int paramCount	)	
+bool checkParameters(	char *param[],
+                        int paramCount	)
 {
+    bool paramExists;
 
-	bool paramExists;
+    for	( wsCounter = 1 ; wsCounter < paramCount ; wsCounter++ )
+    {
+        for ( int x = 0 ; x < PARAM_NUM ; x++ )
+        {
+            if  ( strcmp( param[wsCounter], PARAM_LIST[x] ) )
+            {
+                if ( wsParamFile && (!FileString) ) {
+                    FileString = param[wsCounter];
+                    paramExists = TRUE;
+                    break;
+                }
+                else paramExists = FALSE ;
 
-	for	( wsCounter = 1 ; wsCounter < paramCount ; wsCounter++ ){
+            } else {
 
-		for ( int x = 0 ; x < PARAM_NUM ; x++ ) {
-			
-			if  ( strcmp( param[wsCounter], PARAM_LIST[x] ) ){
+                paramExists = TRUE;
+                wsActivateParameter(param[wsCounter]);
+                break;
 
-				if ( wsParamFile && (!FileString) ) {
-					FileString = param[wsCounter];
-					paramExists = TRUE;
-					break;
-				}
+            }
+        }
 
-				else
-					paramExists = FALSE ;
+        if( !paramExists )
+            wsWarning(WARNING_STRING_PNE, WARNING_CODE_PNE, &param[wsCounter] );
+    }
 
-			}
-			else{
 
-					paramExists = TRUE;
-					wsActivateParameter(param[wsCounter]);
-					break;
+    if( wsParamHelp )
+    {
+        //
+        printHelp();
+        return FALSE ;
 
-			}
-			
-		}
+    } else
+    {
+        if( !param[1] )
+            wsWarning(WARNING_STRING_NO_PARAM);
 
-		if( !paramExists )
-			wsWarning(WARNING_STRING_PNE, WARNING_CODE_PNE, &param[wsCounter] );
-	}
-	
+        if( !wsParamFile )
+            wsError(ERROR_STRING_FPNE, ERROR_CODE_FPNE);
 
-	if( wsParamHelp ){
+        if( !FileString )
+            wsError(ERROR_STRING_FNS,ERROR_CODE_FNS);
 
-		printHelp();
-		return FALSE ;
+        if( wsParamChart )
+            wsPrintChart();
+    }
 
-	}
-	else{
-
-		if( !param[1] )
-			wsWarning(WARNING_STRING_NO_PARAM);	
-
-		if( !wsParamFile )
-			wsError(ERROR_STRING_FPNE, ERROR_CODE_FPNE);
-
-		if( !FileString )
-			wsError(ERROR_STRING_FNS,ERROR_CODE_FNS);
-
-		if( wsParamChart )
-			wsPrintChart();
-	}
-	
-	if (!wsParamFile || !FileString)
-		return FALSE ;
-	else 
-		return TRUE ;
+    if (!wsParamFile || !FileString)
+        return FALSE ;
+    else
+        return TRUE ;
 
 }
 
 /*	FUNCION QUE A PARTIR DE checkParameters()
-	ESTABLECE CUALES PARAMETROS DEBERAN SER 
+	ESTABLECE CUALES PARAMETROS DEBERAN SER
 	ACTIVADOS
 */
-void wsActivateParameter(char *paramString)	
+void wsActivateParameter(char *paramString)
 {
 
-	if(!(strcmp( paramString, "-help")))
-		wsParamHelp = TRUE;
+    if(!(strcmp( paramString, "-help")))
+        wsParamHelp = TRUE;
 
-	if(!(strcmp( paramString, "-dev")))
-		wsParamDev = TRUE;
-		
-	if(!(strcmp( paramString, "-verbose")))
-		wsParamVerbose = TRUE;
+    if(!(strcmp( paramString, "-dev")))
+        wsParamDev = TRUE;
 
-	if(!(strcmp( paramString, "-file")))
-		wsParamFile = TRUE;
+    if(!(strcmp( paramString, "-verbose")))
+        wsParamVerbose = TRUE;
 
-	if(!(strcmp( paramString, "-chart")))
-		wsParamChart = TRUE;
+    if(!(strcmp( paramString, "-file")))
+        wsParamFile = TRUE;
+
+    if(!(strcmp( paramString, "-chart")))
+        wsParamChart = TRUE;
 
 }
 
@@ -446,288 +412,260 @@ void wsActivateParameter(char *paramString)
 	(SE ACTIVA CON EL PARAMETRO -help
 	EN EL COMMAND LINE)
 */
-void printHelp()	
+void printHelp()
 {
 
-	printf(	"Parametros disponibles para ejecucion:\n"
-			"-file <nombreArchivo>\t:\tParametro de especificacion\n"
-			"\t\t\t\tde Archivo de nombre <nombreArchivo>\n"
-			" -dev\t\t\t:\tModo Desarrollador\n"
-			"-verbose\t\t:\tModo Verbose (Detalle)\n"
-			"-chart\t\t\t:\tImpresion de cartelera parametrica\n");
+    printf(	"Parametros disponibles para ejecucion:\n"
+            "-file <nombreArchivo>\t:\tParametro de especificacion\n"
+            "\t\t\t\tde Archivo de nombre <nombreArchivo>\n"
+            " -dev\t\t\t:\tModo Desarrollador\n"
+            "-verbose\t\t:\tModo Verbose (Detalle)\n"
+            "-chart\t\t\t:\tImpresion de cartelera parametrica\n");
 }
 
 
 /*	FUNCION QUE IMPRIME EL CONJUNTO
-	DE LOS PAR¡METROS ESPECIFICANDO
+	DE LOS PAR√ÅMETROS ESPECIFICANDO
 	POR CADA UNO SI FUE ACTIVADO O NO
 	CONJUNTAMENTE CON LA IMPRESION DEL NOMBRE DEL ARCHIVO
 	INGRESADO ( PUEDE SER ACTIVADO CON -chart EN EL COMMAND LINE
 */
-void wsPrintChart()	
+void wsPrintChart()
 {
-	
-	printf(	"[BEGIN CHART]\n" 
-			"-----\n"); 
-	printf("Modo Desarrollador = %d\n",(int)wsParamDev);
-	printf("Modo Verbose\t   = %d\n",(int)wsParamVerbose);
 
-	if( FileString )
-		printf("Archivo : \"%s\"\n", FileString); 
-	else
-		printf("Archivo : NO ESPECIFICADO\n"); 
+    printf(	"[BEGIN CHART]\n"
+            "-----\n");
+    printf("Modo Desarrollador = %d\n",(int)wsParamDev);
+    printf("Modo Verbose\t   = %d\n",(int)wsParamVerbose);
+
+    if( FileString )
+        printf("Archivo : \"%s\"\n", FileString);
+    else
+        printf("Archivo : NO ESPECIFICADO\n");
+
+    printf(	"-----\n"
+            "[END CHART]\n");
 
 
-	printf(	"-----\n"
-			"[END CHART]\n"); 
-	
-			
 }
 
 
 /* FUNCION QUE SE ENCARGA DE IMPRIMIR LOS ERRORES
 	DE EJECUCION EN EL PROGRAMA
 */
-void wsError(	char errorString[], 
-				int errorCode		)	
+void wsError(	char errorString[],
+                int errorCode		)
 {
-
-	SetConsoleTextAttribute( hConsole, COLOR_RED );
-	printf( "ERROR %d: %s\n",errorCode,errorString );
-	SetConsoleTextAttribute( hConsole, COLOR_DEFAULT );
-
+    printf( "ERROR %d: %s\n",errorCode,errorString );
 }
 
 
 /* FUNCION QUE SE ENCARGA DE IMPRIMIR LAS ADVERTENCIAS
 	DURANTE LA EJECUCION DEL PROGRAMA
 */
-void wsWarning (char errorString[])	
+void wsWarning (char errorString[])
 {
-	
-	SetConsoleTextAttribute( hConsole, COLOR_YELLOW );
-	printf( "ADVERTENCIA: %s\n",errorString );
-	SetConsoleTextAttribute( hConsole, COLOR_DEFAULT );
+    printf( "ADVERTENCIA: %s\n",errorString );
+}
+
+
+void wsWarning (	char errorString[],
+                    int errorCode		)
+{
+    printf(	"ADVERTENCIA %d: %s\n",errorCode,errorString );
 }
 
 
 
-void wsWarning (	char errorString[], 
-					int errorCode		)	
+void wsWarning (	char errorString[],
+                    int errorCode,
+                    char *paramString[]	)
 {
-	
-	SetConsoleTextAttribute( hConsole, COLOR_YELLOW );
-	printf(	"ADVERTENCIA %d: %s\n",errorCode,errorString );
-	SetConsoleTextAttribute( hConsole, COLOR_DEFAULT );
-
-}
-
-
-
-void wsWarning (	char errorString[], 
-					int errorCode, 
-					char *paramString[]	)	
-{
-	
-	SetConsoleTextAttribute( hConsole, COLOR_YELLOW );
-	printf( "ADVERTENCIA %d: %s (%s)\n",errorCode,errorString,*paramString );
-	SetConsoleTextAttribute( hConsole, COLOR_DEFAULT );
-
+    printf( "ADVERTENCIA %d: %s (%s)\n",errorCode,errorString,*paramString );
 }
 
 
 /* FUNCION QUE SE ENCARGA DE LA SALIDA DEL PROGRAMA */
-void wsExit()	
+void wsExit()
 {
 
-	if( wsParamDev )
-		system( "PAUSE" );
+    if( wsParamDev )
+        system( "PAUSE" );
 
-	exit(0);
+    exit(0);
 
 }
 
-/*	FUNCION QUE SE ENCARGA DE LA LECTURA Y PROCESAMIENTO 
-	DEL ARCHIVO DE ENTRADA EN EL PROGRAMA 
+/*	FUNCION QUE SE ENCARGA DE LA LECTURA Y PROCESAMIENTO
+	DEL ARCHIVO DE ENTRADA EN EL PROGRAMA
 */
 void readFile(char *fileName)
-{	
-	
-	char InputWord[MAX_WORD_SIZE];
-	char InputLine[MAX_LINE_SIZE];
+{
+    char InputWord[MAX_WORD_SIZE];
+    char InputLine[MAX_LINE_SIZE];
 
-	int wordCount, lineNum = 0;
-	int pCount = 1;
-	
-	wordCount = countWords ( fileName );
-	InputFile.open(fileName);
+    int wordCount, lineNum = 0;
+    int pCount = 1;
 
-
-	printf( "Archivo %s cargado exitosamente ! .\n"
-			"Procesando archivo...\n", fileName		);
-	
-	printf("Procesando palabras...\n");
-	
+    wordCount = countWords ( fileName );
+    InputFile.open(fileName);
 
 
-	InputFile >> InputWord;
-	wsWordTable.insertWord(InputWord);
-		
-	while (!InputFile.eof()){
-		
-		pCount++;
+    printf( "Archivo %s cargado exitosamente ! .\n"
+            "Procesando archivo...\n", fileName		);
 
-		if(wsParamVerbose)
-			printf( "Palabra %d: %s\n", pCount, InputWord);
+    printf("Procesando palabras...\n");
 
-		InputFile >> InputWord;
-			
-		wsWordTable.insertWord( InputWord );
-		
-		if(!wsParamDev && !wsParamVerbose )
+    InputFile >> InputWord;
+    wsWordTable.insertWord(InputWord);
 
-			printf("%d/%d %.1f pps (%.1f %s)  \r", pCount, 
-			wordCount, pCount/(float)(clock()/CLK_TCK),
-			(float)pCount*100/wordCount, "%"
-			);
-		
-	}
-	
-	printf("\n");
+    while (!InputFile.eof()) {
 
-	InputFile.close();
+        pCount++;
 
-	float tWord;
-	tWord = (float) clock();
+        if(wsParamVerbose)
+            printf( "Palabra %d: %s\n", pCount, InputWord);
 
-	int tLineCount;
-	tLineCount = countLines(fileName);
+        InputFile >> InputWord;
 
-	InputFile.open(fileName);
-	
-	if(wsParamVerbose)
-		printf("Leyendo linea # %d ...\n", lineNum);
+        wsWordTable.insertWord( InputWord );
 
-	InputFile.getline(InputLine, MAX_LINE_SIZE);
+        if(!wsParamDev && !wsParamVerbose )
 
-	if(wsParamVerbose)
-		printf("%s\n",InputLine);
+            printf("%d/%d %.1f pps (%.1f %s)  \r", pCount,
+                   wordCount, pCount/(float)(clock()/CLK_TCK),
+                   (float)pCount*100/wordCount, "%"
+                  );
+    }
+
+    printf("\n");
+
+    InputFile.close();
+
+    float tWord;
+    tWord = (float) clock();
+
+    int tLineCount;
+    tLineCount = countLines(fileName);
+
+    InputFile.open(fileName);
+
+    if(wsParamVerbose)
+        printf("Leyendo linea # %d ...\n", lineNum);
+
+    InputFile.getline(InputLine, MAX_LINE_SIZE);
+
+    if(wsParamVerbose)
+        printf("%s\n",InputLine);
 
 
-	
-	wsWordTable.insertLine(InputLine, lineNum);
-	
-	printf("Procesando lineas...\n");
 
-	while (!InputFile.eof()){
+    wsWordTable.insertLine(InputLine, lineNum);
 
-		lineNum++;
+    printf("Procesando lineas...\n");
 
-		if(wsParamVerbose)
-			printf("Leyendo linea # %d ...\n", lineNum);
+    while (!InputFile.eof()) {
 
-		InputFile.getline(InputLine, MAX_LINE_SIZE);
+        lineNum++;
 
-		if(wsParamVerbose)
-			printf("%s\n",InputLine);
+        if(wsParamVerbose)
+            printf("Leyendo linea # %d ...\n", lineNum);
 
-		wsWordTable.insertLine(InputLine, lineNum);
+        InputFile.getline(InputLine, MAX_LINE_SIZE);
 
-		if(!wsParamDev && !wsParamVerbose)
+        if(wsParamVerbose)
+            printf("%s\n",InputLine);
 
-			printf("%d/%d %.1f lps (%.1f %s)  \r", lineNum+1 , 
-			tLineCount, tLineCount/(float)((clock() - tWord)/CLK_TCK),
-			(float)(lineNum+1)*100/tLineCount, "%"
-			);
-		
-	}
+        wsWordTable.insertLine(InputLine, lineNum);
 
-	printf("\n");
-	if(wsParamDev)
-		wsWordTable.printTable();
+        if(!wsParamDev && !wsParamVerbose)
 
-	printf("\nArchivo %s leido.\n",fileName);
-	printf("\n%d palabra(s) encontrada(s), %d palabra(s) descartada(s).\n",  wordCount, palDesc);
-	printf("%d palabra(s) capturada(s).\n", wordCount - palDesc);
-	printf("%d linea(s) procesada(s).\n", lineNum+1);
-	wsWordTable.writeOutputFile();
-	printf("Archivo de salida \"output_ws.wsd\" generado.\n");
-	printf("%.4f segundo(s) transcurrido(s).\n", (float)clock()/CLK_TCK);	
-		
-	InputFile.close();
+            printf("%d/%d %.1f lps (%.1f %s)  \r", lineNum+1 ,
+                   tLineCount, tLineCount/(float)((clock() - tWord)/CLK_TCK),
+                   (float)(lineNum+1)*100/tLineCount, "%"
+                  );
+    }
+
+    printf("\n");
+    if(wsParamDev)
+        wsWordTable.printTable();
+
+    printf("\nArchivo %s leido.\n",fileName);
+    printf("\n%d palabra(s) encontrada(s), %d palabra(s) descartada(s).\n",
+        wordCount, palDesc);
+    printf("%d palabra(s) capturada(s).\n", wordCount - palDesc);
+    printf("%d linea(s) procesada(s).\n", lineNum+1);
+    wsWordTable.writeOutputFile();
+    printf("Archivo de salida \"output_ws.wsd\" generado.\n");
+    printf("%.4f segundo(s) transcurrido(s).\n", (float)clock()/CLK_TCK);
+
+    InputFile.close();
 }
 
 
-/*	FUNCION QUE DEVUELVE EL 
+/*	FUNCION QUE DEVUELVE EL
 	NUMERO TOTAL DE LINEAS
-	QUE HAY EN EL ARCHIVO 
+	QUE HAY EN EL ARCHIVO
 */
-int countWords (char *cFileName){
+int countWords (char *cFileName)
+{
+    int wCount = 1;
+    char temp[MAX_WORD_SIZE];
 
-	
-	int wCount = 1;
-	char temp[MAX_WORD_SIZE];
+    InputFile.open( cFileName );
+    InputFile >> temp;
 
-	InputFile.open( cFileName );
-	InputFile >> temp;
-	
-	while (!InputFile.eof()){
-		wCount++;
-		InputFile >> temp ;
-	}
+    while (!InputFile.eof()) {
+        wCount++;
+        InputFile >> temp ;
+    }
 
-	InputFile.close();
+    InputFile.close();
 
-	return wCount;
-
-	
+    return wCount;
 }
 
 
-/*	FUNCION QUE DEVUELVE EL 
+/*	FUNCION QUE DEVUELVE EL
 	NUMERO TOTAL DE LINEAS
-	QUE HAY EN EL ARCHIVO 
+	QUE HAY EN EL ARCHIVO
 */
-int countLines (char *cFileName){
-	
-	char tmpLine[MAX_LINE_SIZE];
-	int lCount = 1;
+int countLines (char *cFileName)
+{
+    char tmpLine[MAX_LINE_SIZE];
+    int lCount = 1;
 
-	InputFile.open(cFileName);
-	InputFile.getline(tmpLine, MAX_LINE_SIZE);
-	
-	while (!InputFile.eof()){
+    InputFile.open(cFileName);
+    InputFile.getline(tmpLine, MAX_LINE_SIZE);
 
-		lCount++;
-		InputFile.getline(tmpLine, MAX_LINE_SIZE)	;
-	}
-	
-	InputFile.close();
-	return lCount;
+    while (!InputFile.eof()) {
+
+        lCount++;
+        InputFile.getline(tmpLine, MAX_LINE_SIZE)	;
+    }
+
+    InputFile.close();
+    return lCount;
 }
 
 
 /* FUNCION MAIN DEL PROGRAMA */
-void main (	int argc, 
-			char *argv[], 
-			char **envp )
+void main (	int argc,
+            char *argv[],
+            char **envp )
 {
-	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	
-	wsSplash();
+    wsSplash();
 
-	if( checkParameters(argv,argc) ){
+    if( checkParameters(argv,argc) ) {
 
-		printf(	"[BEGIN WS]\n-----\n"); 
-		readFile(FileString);
-		printf(	"-----\n[END WS]\n");
-		
-	}
-	else if(!wsParamHelp){
-		wsError(ERROR_STRING_PARAMERROR, ERROR_CODE_PARAMERROR);
-	}
-	
-	wsExit();
-	
+        printf(	"[BEGIN WS]\n-----\n");
+        readFile(FileString);
+        printf(	"-----\n[END WS]\n");
+
+    } else if(!wsParamHelp) {
+        wsError(ERROR_STRING_PARAMERROR, ERROR_CODE_PARAMERROR);
+    }
+
+    wsExit();
 }
 
