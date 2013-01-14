@@ -25,11 +25,16 @@
 
 #define WES_ARG_VERBOSE 1 << 0
 #define WES_ARG_HELP 	1 << 1
+#define WES_ARG_VERSION 1 << 2
 
 #define WES_MAX_LINE_SIZE	8192
 #define WES_MAX_TOKEN_SIZE	128
 
 #define WES_TOKEN_DELIMIT " .,;-\n\t"
+
+#define WES_NAME "wes"
+#define WES_VER_MAJOR 0
+#define WES_VER_MINOR 1
 
 typedef struct _line_t
 {
@@ -54,7 +59,8 @@ char *g_filename;
 /*
  * Parse command line arguments
  */
-void wes_parsecmdline ( int argc, char ** argv )
+void
+wes_parsecmdline ( int argc, char ** argv )
 {
     int i;
 
@@ -63,22 +69,22 @@ void wes_parsecmdline ( int argc, char ** argv )
         return;
     }
 
-    //while (argc > 1)
     for (i = 1; i < argc; i++)
     {
         if (!strcmp("--help", argv[i]))
-        {
             g_args |= WES_ARG_HELP;
-        }
         else if (!strcmp("--verbose", argv[i]))
             g_args |= WES_ARG_VERBOSE;
+         else if (!strcmp("--version", argv[i]))
+            g_args |= WES_ARG_VERSION;
         else
             g_filename = argv[i];
     }
 }
 
 
-void wes_help ()
+void
+wes_help ()
 {
     printf(
 		"usage: wes <filename> <args>\n"
@@ -88,7 +94,19 @@ void wes_help ()
 		);
 }
 
-line_t * wes_line_create ( int line )
+void
+wes_version ()
+{
+    printf (
+    "%s %d.%d\n"
+    "Copyright (C) 2005 Alejandro Ricoveri\n"
+    "This is free software; see the source for copying conditions.  There is NO\n"
+    "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
+    ,WES_NAME, WES_VER_MAJOR, WES_VER_MINOR);
+}
+
+line_t *
+wes_line_create ( int line )
 {
     line_t *new_line = malloc(sizeof(line_t));
     memset((void *)new_line, 0, sizeof(line_t));
@@ -97,32 +115,27 @@ line_t * wes_line_create ( int line )
     return new_line;
 }
 
-void wes_line_delete (line_t *line)
+void
+wes_line_delete (line_t *line)
 {
     if (line->next)
         wes_line_delete(line->next);
     free(line);
 }
 
-void wes_line_insert (token_t *token, int line)
+void
+wes_line_insert (line_t **line_ptr, int number)
 {
-    line_t * cur_line;
-
-    for (cur_line = token->lines; cur_line; cur_line = cur_line->next)
-    {
-        if (cur_line->number == line) {
-            cur_line->times++;
-            break;
-        }
-
-        if (!cur_line->next) {
-            cur_line->next = wes_line_create(line);
-            break;
-        }
+    if (*line_ptr) {
+        if ((*line_ptr)->number == number)
+            (*line_ptr)->times++;
+        else wes_line_insert(&((*line_ptr))->next, number);
     }
+    else *line_ptr = wes_line_create(number);
 }
 
-token_t * wes_token_create ( char *token_str, int line )
+token_t *
+wes_token_create ( char *token_str, int line )
 {
     token_t *new_token = malloc(sizeof(token_t));
     memset((void *)new_token, 0, sizeof(token_t));
@@ -136,7 +149,8 @@ token_t * wes_token_create ( char *token_str, int line )
     return new_token;
 }
 
-void wes_token_delete ( token_t *token )
+void
+wes_token_delete ( token_t *token )
 {
     if (token)
     {
@@ -149,21 +163,23 @@ void wes_token_delete ( token_t *token )
     }
 }
 
-void wes_token_insert ( token_t **token_ptr, char *token_str, int line )
+void
+wes_token_insert ( token_t **token_ptr, char *token_str, int line )
 {
-    int cmp ;
-
-    if (!(*token_ptr))
-        *token_ptr = wes_token_create(token_str, line);
-    else if (!(cmp = strcmp(token_str, (*token_ptr)->str)))
-        wes_line_insert (*token_ptr, line);
-    else if (cmp < 0)
-        wes_token_insert(&(*token_ptr)->left, token_str, line);
-    else
-        wes_token_insert(&(*token_ptr)->right, token_str, line);
+    if (*token_ptr) {
+        int cmp ;
+        if (!(cmp = strcmp(token_str, (*token_ptr)->str)))
+            wes_line_insert (&((*token_ptr))->lines, line);
+        else if (cmp < 0)
+            wes_token_insert(&(*token_ptr)->left, token_str, line);
+        else
+            wes_token_insert(&(*token_ptr)->right, token_str, line);
+    }
+    else *token_ptr = wes_token_create(token_str, line);
 }
 
-void wes_log_tree ( token_t *token )
+void
+wes_log_tree ( token_t *token )
 {
     if (token)
     {
@@ -178,7 +194,8 @@ void wes_log_tree ( token_t *token )
     }
 }
 
-int wes_error ( char *fmt, ... )
+int
+wes_error ( char *fmt, ... )
 {
     va_list ap;
 
@@ -191,21 +208,8 @@ int wes_error ( char *fmt, ... )
     return -1;
 }
 
-//void wes_log (char *fmt, ...)
-//{
-//    va_list ap;
-//
-//    if (g_args & WES_ARG_VERBOSE)
-//    {
-//        va_start (ap, fmt);
-//            vprintf (fmt, ap);
-//        va_end(ap);
-//        printf("\n");
-//    }
-//}
-
-
-int wes_readfile ()
+int
+wes_readfile ()
 {
     char *in_token = NULL; // This will hold each captured token
     char in_line[WES_MAX_LINE_SIZE]; // This will hold each line in the file
@@ -256,7 +260,8 @@ int wes_readfile ()
 }
 
 /* Entry point */
-int main ( int argc, char *argv[] )
+int
+main ( int argc, char *argv[] )
 {
     // Parse each argument in the command line
     wes_parsecmdline (argc ,argv);
@@ -266,6 +271,12 @@ int main ( int argc, char *argv[] )
     {
         // Print help and get out
         wes_help();
+        return EXIT_SUCCESS;
+    }
+
+    if (g_args & WES_ARG_VERSION)
+    {
+        wes_version();
         return EXIT_SUCCESS;
     }
 
