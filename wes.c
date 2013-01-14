@@ -119,11 +119,11 @@ void
 wes_help ()
 {
     printf(
-		"usage: wes <filename> <args>\n"
-		"Arguments can be:\n"
-		"--help\t\tPrint this help and exit\n"
-		"--verbose\trun with debug info\n"
-		);
+        "usage: wes <filename> <args>\n"
+        "Arguments can be:\n"
+        "--help\t\tPrint this help and exit\n"
+        "--verbose\trun with debug info\n"
+        );
 }
 
 /*
@@ -364,7 +364,7 @@ wes_readfile ()
                 // insert a (maybe) new token into the btree of tokens
                 wes_token_insert (&g_btree, in_token, line);
             }
-		}
+        }
     }
 
     // Print the tree contents
