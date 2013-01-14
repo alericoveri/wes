@@ -371,7 +371,8 @@ wes_readfile ()
     // Print the tree contents
     printf("-- %s tokenizing statistics --\n", g_filename);
     wes_log_tree(g_btree);
-    printf("%4d token(s) found\n", g_token_count);
+    printf("\n%6d token(s) found\n", g_token_count);
+    printf("%6d lines(s) read\n", line);
     printf("-- End of execution --\n");
 
     // Do the house keeping!
