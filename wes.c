@@ -133,13 +133,14 @@ void
 wes_version ()
 {
     printf (
-    "%s %d.%d\n"
-    "Copyright (C) 2005 Alejandro Ricoveri\n"
-    "This is free software; see the source for "
-    "copying conditions.  There is NO\n"
-    "warranty; not even for MERCHANTABILITY or "
-    "FITNESS FOR A PARTICULAR PURPOSE.\n"
-    ,WES_NAME, WES_VER_MAJOR, WES_VER_MINOR);
+        "%s %d.%d\n"
+        "Copyright (C) 2005 Alejandro Ricoveri\n"
+        "This is free software; see the source for "
+        "copying conditions.  There is NO\n"
+        "warranty; not even for MERCHANTABILITY or "
+        "FITNESS FOR A PARTICULAR PURPOSE.\n"
+        ,WES_NAME, WES_VER_MAJOR, WES_VER_MINOR
+        );
 }
 
 /*
