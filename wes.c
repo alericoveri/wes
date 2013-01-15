@@ -150,7 +150,7 @@ wes_version ()
  * Create a new line
  */
 line_t *
-wes_line_create ( int number )
+wes_line_create ( int line_number )
 {
     // Allocate some mem for the new line
     line_t *new_line = malloc(sizeof(line_t));
@@ -160,7 +160,7 @@ wes_line_create ( int number )
     memset((void *)new_line, 0, sizeof(line_t));
 
     // Assign a number for this line
-    new_line->number = number;
+    new_line->number = line_number;
 
     // Initial ocurrence for this line is 1
     new_line->times = 1;
@@ -182,18 +182,18 @@ wes_line_delete (line_t *line)
         wes_line_delete(line->next);
 
     // And that's it, we proceed to free that mem
-    free(line);
+    free(line); line = NULL;
 }
 
 /*
  * Append a line to a token line list
  */
 void
-wes_line_insert ( line_t **line_ptr, int number )
+wes_line_insert ( line_t **line_ptr, int line_number )
 {
     if (*line_ptr)
     {
-        if ((*line_ptr)->number == number)
+        if ((*line_ptr)->number == line_number)
             // At this point, the token has been found
             // more than once on this line number
             (*line_ptr)->times++;
@@ -201,19 +201,19 @@ wes_line_insert ( line_t **line_ptr, int number )
         // There is no other ocurrence for the token
         // on this line number, so we try to seek for
         // it on the next one
-        else wes_line_insert(&((*line_ptr))->next, number);
+        else wes_line_insert(&((*line_ptr))->next, line_number);
     }
 
     // At this point, the token has been found
     // for the first time on this line number
-    else *line_ptr = wes_line_create(number);
+    else *line_ptr = wes_line_create(line_number);
 }
 
 /*
  * Create a new token
  */
 token_t *
-wes_token_create ( char *token_str, int number )
+wes_token_create ( char *token_str, int line_number )
 {
     // Allocate some mem for the new token
     token_t *new_token = malloc(sizeof(token_t));
@@ -226,7 +226,7 @@ wes_token_create ( char *token_str, int number )
 
     // There's automatically a first ocurrence
     // of this token on this line number
-    new_token->lines = wes_line_create (number);
+    new_token->lines = wes_line_create (line_number);
 
     // Another token to the global count!
     g_token_count++;
@@ -255,7 +255,7 @@ wes_token_delete ( token_t *token )
         wes_line_delete(token->lines);
 
         // ... And then, we can finally free this mem
-        free((void *)token);
+        free(token); token = NULL;
     }
 }
 
@@ -263,7 +263,7 @@ wes_token_delete ( token_t *token )
  * Append a token to the token b-tree
  */
 void
-wes_token_insert ( token_t **token_ptr, char *token_str, int line )
+wes_token_insert ( token_t **token_ptr, char *token_str, int line_number )
 {
     if (*token_ptr)
     {
@@ -273,19 +273,19 @@ wes_token_insert ( token_t **token_ptr, char *token_str, int line )
             // Token already exists on the b-tree, so
             // we proceed to append a new line ocurrence
             // for this token
-            wes_line_insert (&((*token_ptr))->lines, line);
+            wes_line_insert (&((*token_ptr))->lines, line_number);
 
         // Token may be not found here
         // Try to insert into whether its right or left wing
         else if (cmp < 0)
-            wes_token_insert(&(*token_ptr)->left, token_str, line);
+            wes_token_insert(&(*token_ptr)->left, token_str, line_number);
         else
-            wes_token_insert(&(*token_ptr)->right, token_str, line);
+            wes_token_insert(&(*token_ptr)->right, token_str, line_number);
     }
 
     // At this point, token doesn't exists
     // So, we create it ...
-    else *token_ptr = wes_token_create(token_str, line);
+    else *token_ptr = wes_token_create(token_str, line_number);
 }
 
 /*
@@ -329,7 +329,7 @@ wes_error ( char *fmt, ... )
         fprintf (stderr, "\n");
     va_end(ap);
 
-    return -1;
+    return EXIT_FAILURE;
 }
 
 /*
@@ -343,7 +343,7 @@ wes_readfile ()
     char in_line[WES_MAX_LINE_SIZE]; // This will hold each line in the file
 
     // Current line number
-    unsigned line;
+    unsigned line_number;
 
     // The input file itself
     FILE *file;
@@ -353,7 +353,7 @@ wes_readfile ()
 		return wes_error("Couldn't open '%s'", g_filename);
 
     // Proceed to read each line and tokenize it
-	for (line = 1; !feof(file); line++)
+	for (line_number = 1; !feof(file); line_number++)
 	{
         // Get the line as a string
 		if (fgets(in_line, WES_MAX_LINE_SIZE, file))
@@ -366,7 +366,7 @@ wes_readfile ()
                 in_token = strtok (NULL, WES_TOKEN_DELIMIT))
             {
                 // insert a (maybe) new token into the btree of tokens
-                wes_token_insert (&g_btree, in_token, line);
+                wes_token_insert (&g_btree, in_token, line_number);
             }
         }
     }
@@ -378,7 +378,7 @@ wes_readfile ()
         "ocurrences in parenthesis\n\n");
     wes_log_tree(g_btree);
     printf ("\n%6d token(s) found\n", g_token_count);
-    printf ("%6d lines(s) read\n", line);
+    printf ("%6d lines(s) read\n", line_number);
     printf ("-- End of execution --\n");
 
     // Do the house keeping!
@@ -388,7 +388,7 @@ wes_readfile ()
     fclose(file);
 
     // ... and we're done
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 /* Entry point */
