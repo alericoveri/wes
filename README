@@ -54,14 +54,7 @@ with their respective number of ocurrences in parenthesis
 
 COMMAND LINE OPTIONS
 
---help	Print a help message and exit
---verbose run with debug info
-
-ERRORS
-
-Wes can produce the following error messages to stderr
-
-"File not found"
-"Not enough memory for allocation"
+--help :	Print a help message and exit
+--verbose :	Run with debug info
 
 Copyright 2005 Alejandro Ricoveri. All Rights Reserved Wrrrldwide.
