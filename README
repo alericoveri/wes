@@ -1,7 +1,7 @@
 Wes, A SIMPLE B-TREE FILE TOKENIZER
 
-Alejandro Ricoveri
-alejandroricoveri@gmail.com
+Copyright 2005-2013 Alejandro Ricoveri <alejandroricoveri@gmail.com>
+
 
 WHAT IS WES ?
 
@@ -71,5 +71,3 @@ COMMAND LINE OPTIONS
 
 --help :	Print a help message and exit
 --verbose :	Run with debug info
-
-Copyright 2005 Alejandro Ricoveri. All Rights Reserved Wrrrldwide.

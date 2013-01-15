@@ -2,7 +2,7 @@
  *
  * wes
  * A simple b-tree tokenizer for educational purposes
- * Copyright © 2005 Alejandro Ricoveri <alejandroricoveri@gmail.com>
+ * Copyright © 2005-2013 Alejandro Ricoveri <alejandroricoveri@gmail.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -126,8 +126,8 @@ wes_help ()
     printf(
         "usage: wes <filename> <args>\n"
         "Arguments can be:\n"
-        "--help\t\tPrint this help and exit\n"
-        "--verbose\tRun with much more verbosity\n"
+        " --help\t\tPrint this help and exit\n"
+        " --verbose\tRun with much more verbosity\n"
         );
 }
 
