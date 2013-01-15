@@ -12,6 +12,15 @@ I finally decided to clean the code, port it to C and
 to release it as open source under the terms of the GPL.
 
 
+WES OBJECTIVES
+
+* To be minimalist
+* To be clean
+* To be well documented
+* To be C99 compliant code
+* To help students in basic connaisances
+
+
 HOW TO BUILD WES ?
 
 $ cc wes.c -o wes
