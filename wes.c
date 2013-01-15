@@ -32,9 +32,9 @@
 #define WES_ARG_HELP 	1 << 1
 #define WES_ARG_VERSION 1 << 2
 
-#define WES_MAX_COLS	    8192
+#define WES_MAX_COLS        8192
 #define WES_MAX_LINES       UINT16_MAX
-#define WES_MAX_TOKEN_SIZE	128
+#define WES_MAX_TOKEN_SIZE  128
 
 #define WES_TOKEN_DELIMIT " .,;-\n\t"
 
