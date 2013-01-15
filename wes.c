@@ -127,7 +127,7 @@ wes_help ()
         "usage: wes <filename> <args>\n"
         "Arguments can be:\n"
         "--help\t\tPrint this help and exit\n"
-        "--verbose\trun with debug info\n"
+        "--verbose\tRun with much more verbosity\n"
         );
 }
 
