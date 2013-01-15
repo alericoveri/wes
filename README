@@ -10,7 +10,10 @@ It is the result of a small file tokenizer project I made
 for a course back in my college days in 2005.
 It was named 'ws' (wordsorter) back then.  
 I finally decided to release it as open source under 
-the terms of the GPL.
+the terms of the GPL. Wes is the result of an almost 
+complete rewrite of the original project, it was readapted
+to be more alike to real software engineering practices.
+The original 'ws' project can be found on the first commit.
 
 WHAT WES DOES
 
