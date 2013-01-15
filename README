@@ -12,15 +12,27 @@ It was named 'ws' (wordsorter) back then.
 I finally decided to release it as open source under 
 the terms of the GPL.
 
-HOW TO BUILD WES ?
-
-$ cc wes.c -o wes
 
 WHAT WES DOES
 
 Wes takes an input file and reads all tokens it can find, 
 organizes them and saves each line ocurrence for
 each token found in the input file.
+
+
+WES OBJECTIVES
+
+* To be clean and simple
+* To be realistic
+* To be C99 compliant
+* To be well documented
+* To help other programmers
+
+
+HOW TO BUILD WES ?
+
+$ cc wes.c -o wes
+
 
 EXAMPLE
 
@@ -58,7 +70,7 @@ with their respective number of ocurrences in parenthesis
 
 COMMAND LINE OPTIONS
 
---help :	Print a help message and exit
---verbose :	Run with debug info
+--help		Print this help and exit
+--verbose	Run with much more verbosity
 
 Copyright 2005 Alejandro Ricoveri. All Rights Reserved Wrrrldwide.
