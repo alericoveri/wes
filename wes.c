@@ -32,7 +32,8 @@
 #define WES_ARG_HELP 	1 << 1
 #define WES_ARG_VERSION 1 << 2
 
-#define WES_MAX_LINE_SIZE	8192
+#define WES_MAX_COLS	    8192
+#define WES_MAX_LINES       UINT16_MAX
 #define WES_MAX_TOKEN_SIZE	128
 
 #define WES_TOKEN_DELIMIT " .,;-\n\t"
@@ -139,11 +140,11 @@ wes_version ()
 {
     printf (
         "%s %d.%d\n"
-        "Copyright (C) 2005 Alejandro Ricoveri\n"
+        "Copyright (C) 2005-2013 Alejandro Ricoveri\n"
         "This is free software; see the source for "
         "copying conditions.  There is NO\n"
         "warranty; not even for MERCHANTABILITY or "
-        "FITNESS FOR A PARTICULAR PURPOSE.\n"
+        "FITNESS FOR A PARTICULAR PURPOSE.\n\n"
         ,WES_NAME, WES_VER_MAJOR, WES_VER_MINOR
         );
 }
@@ -318,6 +319,23 @@ wes_log_tree ( token_t *token )
 }
 
 /*
+ * Print the results summary
+ */
+void
+wes_log_results (uint16_t lines)
+{
+	// Print the tree contents
+    printf ("-- %s tokenizing statistics --\n\n", g_filename);
+    printf ("Below you'll see the list of tokens found,\n"
+            "followed by the line numbers where they were found\n"
+            "with their respective number of ocurrences in parenthesis\n\n");
+    wes_log_tree(g_btree);
+    printf ("\n%6d token(s) found\n", g_token_count);
+    printf ("%6d line(s) read\n", lines);
+    printf ("\n-- End of execution --\n");
+}
+
+/*
  * Print error
  */
 int
@@ -342,7 +360,7 @@ int
 wes_readfile ()
 {
     char *in_token = NULL; // This will hold each captured token
-    char in_line[WES_MAX_LINE_SIZE]; // This will hold each line in the file
+    char in_line[WES_MAX_COLS]; // This will hold each line in the file
 
     // Current line number
     uint16_t line_number;
@@ -357,8 +375,12 @@ wes_readfile ()
     // Proceed to read each line and tokenize it
 	for (line_number = 1; !feof(file); line_number++)
 	{
+        // Wes can leep line count until WES_MAX_LINES - 1
+        if (line_number == WES_MAX_LINES)
+            return wes_error("Max number of lines reached!");
+
         // Get the line as a string
-		if (fgets(in_line, WES_MAX_LINE_SIZE, file))
+		if (fgets(in_line, WES_MAX_COLS, file))
 		{
             // Capture each token and insert it
             // into the b-tree
@@ -374,17 +396,7 @@ wes_readfile ()
     }
 
     // Print the tree contents
-    printf ("-- %s tokenizing statistics --\n\n", g_filename);
-    printf ("Below you'll see the list of tokens found,\n"
-            "followed by the line numbers where they were found\n"
-            "with their respective number of ocurrences in parenthesis\n\n");
-    wes_log_tree(g_btree);
-    printf ("\n%6d token(s) found\n", g_token_count);
-    printf ("%6d line(s) read\n", line_number);
-    printf ("\n-- End of execution --\n");
-
-    // Do the house keeping!
-    wes_token_delete(g_btree);
+    wes_log_results(line_number);
 
     // close the file
     fclose(file);
@@ -397,6 +409,9 @@ wes_readfile ()
 int
 main ( int argc, char *argv[] )
 {
+	// File operation result
+	int res;
+	
     // Parse each argument in the command line
     wes_parsecmdline (argc ,argv);
 
@@ -415,5 +430,12 @@ main ( int argc, char *argv[] )
     }
 
     // Else, we read the file then ...
-    return wes_readfile();
+    res = wes_readfile();
+    
+    // Do the house keeping!
+    // House keeping is made no matter what
+    wes_token_delete(g_btree);
+    
+    // ... and we're done
+    return res;
 }
