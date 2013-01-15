@@ -9,13 +9,13 @@ Wes is a tiny text file tokenizer written in C.
 It is the result of a small file tokenizer project I made 
 in college and initially written in C++, it was called 'ws' (for Word Sort).
 I finally decided to clean the code, port it to C and 
-to release it as open source under the terms of the GPL.
+to release it as open source under the terms of the GPLv3.
 
 
 WES OBJECTIVES
 
 * To be minimalist
-* To be clean
+* To be clean and simple
 * To be well documented
 * To be C99 compliant code
 * To help students in basic connaisances
@@ -23,14 +23,16 @@ WES OBJECTIVES
 
 HOW TO BUILD WES ?
 
-$ cc wes.c -o wes
+You can use your preferred compiler: gcc, tcc, icc, etc ...
+
+shell$ cc wes.c -o wes
 
 
 WHAT WES DOES
 
-Wes takes an input file and reads all tokens it can find, 
+Wes takes a text input file and reads all tokens it can find, 
 organizes them and saves each line ocurrence for
-each token found in the input file.
+each token found in that file.
 
 
 EXAMPLE
@@ -40,7 +42,7 @@ Roses are red, Violets are blue
 All I can do is thinking of you ...
 -- EOF --
 
-$ ./wes roses.txt
+shell$ ./wes roses.txt
 -- roses.txt tokenizing statistics --
 
 Below you'll see the list of tokens found,
@@ -71,3 +73,5 @@ COMMAND LINE OPTIONS
 
 --help :	Print a help message and exit
 --verbose :	Run with debug info
+
+Happy coding! :)
