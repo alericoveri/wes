@@ -10,10 +10,7 @@ It is the result of a small file tokenizer project I made
 for a course back in my college days in 2005.
 It was named 'ws' (wordsorter) back then.  
 I finally decided to release it as open source under 
-the terms of the GPL. Wes is the result of an almost 
-complete rewrite of the original project, it was readapted
-to be more alike to real software engineering practices.
-The original 'ws' project can be found on the first commit.
+the terms of the GPL.
 
 WHAT WES DOES
 
@@ -29,13 +26,11 @@ All I can do is thinking of you ...
 -- EOF --
 
 $ wes roses.txt
-
-Output:
 -- roses.txt tokenizing statistics --
-Below you'll see the list of tokens found, 
-followed by the line numbers where they were found, 
-each one with their respective number 
-of ocurrences in parenthesis
+
+Below you'll see the list of tokens found,
+followed by the line numbers where they were found
+with their respective number of ocurrences in parenthesis
 
 * All:  2(1)
 * I:  2(1)
@@ -52,12 +47,21 @@ of ocurrences in parenthesis
 * you:  2(1)
 
     13 token(s) found
-     3 lines(s) read
+     3 line(s) read
+
 -- End of execution --
+
 
 COMMAND LINE OPTIONS
 
---help : 	Print a help message and exit
---verbose : 	run with debug info
+--help	Print a help message and exit
+--verbose run with debug info
+
+ERRORS
+
+Wes can produce the following error messages to stderr
+
+"File not found"
+"Not enough memory for allocation"
 
 Copyright 2005 Alejandro Ricoveri. All Rights Reserved Wrrrldwide.
