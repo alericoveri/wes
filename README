@@ -12,6 +12,10 @@ It was named 'ws' (wordsorter) back then.
 I finally decided to release it as open source under 
 the terms of the GPL.
 
+HOW TO BUILD WES ?
+
+$ cc wes.c -o wes
+
 WHAT WES DOES
 
 Wes takes an input file and reads all tokens it can find, 
@@ -25,7 +29,7 @@ Roses are red, Violets are blue
 All I can do is thinking of you ...
 -- EOF --
 
-$ wes roses.txt
+$ ./wes roses.txt
 -- roses.txt tokenizing statistics --
 
 Below you'll see the list of tokens found,
