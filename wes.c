@@ -21,10 +21,12 @@
  */
 
 #include <string.h>
-#include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <stdint.h>
+
+/* Basic definitions */
 
 #define WES_ARG_VERBOSE 1 << 0
 #define WES_ARG_HELP 	1 << 1
@@ -51,8 +53,8 @@
  */
 typedef struct _line_t
 {
-    int number; // line number
-    int times; // Number of ocurrences
+    uint16_t number; // line number
+    uint8_t times; // Number of ocurrences
     struct _line_t *next;
 } line_t;
 
@@ -71,12 +73,12 @@ typedef struct _token_t
 // Token b-tree root
 token_t *g_btree =  NULL;
 
-// A word holding argument flags
-unsigned char g_args = 0;
+// A octet holding argument flags
+uint8_t g_args = 0;
 
 // This holds the total number of tokens
-// found on file
-unsigned int  g_token_count = 0;
+// found on the input file
+uint16_t g_token_count = 0;
 
 // A string holding the file name to be tokenized
 char *g_filename;
@@ -87,7 +89,7 @@ char *g_filename;
 void
 wes_parsecmdline ( int argc, char ** argv )
 {
-    int i; // counter
+    uint8_t i; // counter
 
     if ( argc == 1 ) {
         // Activate help flag
@@ -150,7 +152,7 @@ wes_version ()
  * Create a new line
  */
 line_t *
-wes_line_create ( int line_number )
+wes_line_create ( uint16_t line_number )
 {
     // Allocate some mem for the new line
     line_t *new_line = malloc(sizeof(line_t));
@@ -189,7 +191,7 @@ wes_line_delete (line_t *line)
  * Append a line to a token line list
  */
 void
-wes_line_insert ( line_t **line_ptr, int line_number )
+wes_line_insert ( line_t **line_ptr, uint16_t line_number )
 {
     if (*line_ptr)
     {
@@ -213,7 +215,7 @@ wes_line_insert ( line_t **line_ptr, int line_number )
  * Create a new token
  */
 token_t *
-wes_token_create ( char *token_str, int line_number )
+wes_token_create ( char *token_str, uint16_t line_number )
 {
     // Allocate some mem for the new token
     token_t *new_token = malloc(sizeof(token_t));
@@ -263,11 +265,11 @@ wes_token_delete ( token_t *token )
  * Append a token to the token b-tree
  */
 void
-wes_token_insert ( token_t **token_ptr, char *token_str, int line_number )
+wes_token_insert ( token_t **token_ptr, char *token_str, uint16_t line_number )
 {
     if (*token_ptr)
     {
-        int cmp ; // It hold string delta
+        int32_t cmp ; // It hold string delta
 
         if (!(cmp = strcmp(token_str, (*token_ptr)->str)))
             // Token already exists on the b-tree, so
@@ -343,7 +345,7 @@ wes_readfile ()
     char in_line[WES_MAX_LINE_SIZE]; // This will hold each line in the file
 
     // Current line number
-    unsigned line_number;
+    uint16_t line_number;
 
     // The input file itself
     FILE *file;
