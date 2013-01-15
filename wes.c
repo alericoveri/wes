@@ -324,7 +324,7 @@ wes_log_tree ( token_t *token )
 void
 wes_log_results (uint16_t lines)
 {
-	// Print the tree contents
+    // Print the tree contents
     printf ("-- %s tokenizing statistics --\n\n", g_filename);
     printf ("Below you'll see the list of tokens found,\n"
             "followed by the line numbers where they were found\n"
@@ -370,18 +370,18 @@ wes_readfile ()
 
     // Open the file
     if (!(file = fopen(g_filename, "r")))
-		return wes_error("Couldn't open '%s'", g_filename);
+        return wes_error("Couldn't open '%s'", g_filename);
 
     // Proceed to read each line and tokenize it
-	for (line_number = 1; !feof(file); line_number++)
-	{
+    for (line_number = 1; !feof(file); line_number++)
+    {
         // Wes can leep line count until WES_MAX_LINES - 1
         if (line_number == WES_MAX_LINES)
             return wes_error("Max number of lines reached!");
 
         // Get the line as a string
-		if (fgets(in_line, WES_MAX_COLS, file))
-		{
+        if (fgets(in_line, WES_MAX_COLS, file))
+        {
             // Capture each token and insert it
             // into the b-tree
             for (
@@ -409,9 +409,9 @@ wes_readfile ()
 int
 main ( int argc, char *argv[] )
 {
-	// File operation result
-	int res;
-	
+    // File operation result
+    int res;
+
     // Parse each argument in the command line
     wes_parsecmdline (argc ,argv);
 
