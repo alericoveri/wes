@@ -5,12 +5,16 @@ alejandroricoveri@gmail.com
 
 WHAT IS WES ?
 
-Wes is a text file tokenizer. 
+Wes is a tiny text file tokenizer written in C. 
 It is the result of a small file tokenizer project I made 
-for a course back in my college days in 2005.
-It was named 'ws' (wordsorter) back then.  
-I finally decided to release it as open source under 
-the terms of the GPL.
+in college and initially written in C++, it was called 'ws' (for Word Sort).
+I finally decided to clean the code, port it to C and 
+to release it as open source under the terms of the GPL.
+
+
+HOW TO BUILD WES ?
+
+$ cc wes.c -o wes
 
 
 WHAT WES DOES
@@ -18,20 +22,6 @@ WHAT WES DOES
 Wes takes an input file and reads all tokens it can find, 
 organizes them and saves each line ocurrence for
 each token found in the input file.
-
-
-WES OBJECTIVES
-
-* To be clean and simple
-* To be realistic
-* To be C99 compliant
-* To be well documented
-* To help other programmers
-
-
-HOW TO BUILD WES ?
-
-$ cc wes.c -o wes
 
 
 EXAMPLE
@@ -70,7 +60,7 @@ with their respective number of ocurrences in parenthesis
 
 COMMAND LINE OPTIONS
 
---help		Print this help and exit
---verbose	Run with much more verbosity
+--help :	Print a help message and exit
+--verbose :	Run with debug info
 
 Copyright 2005 Alejandro Ricoveri. All Rights Reserved Wrrrldwide.
