@@ -1,32 +1,38 @@
-Wes, A B-Tree file tokenizer
+Wes, A SIMPLE B-TREE FILE TOKENIZER
 
 Alejandro Ricoveri
 alejandroricoveri@gmail.com
 
+WHAT IS WES ?
+
 Wes is a text file tokenizer. 
 It is the result of a small file tokenizer project I made 
-for a course back in my college days (2005) 
-who was named 'ws' (wordsorter).  
+for a course back in my college days in 2005.
+It was named 'ws' (wordsorter) back then.  
 I finally decided to release it as open source under 
 the terms of the GPL.
 
-What Wes does
-Wes takes a file and read all tokens it can find, 
-organizes them and even 
+WHAT WES DOES
 
-Example:
+Wes takes an input file and reads all tokens it can find, 
+organizes them and saves each line ocurrence for
+each token found in the input file.
+
+EXAMPLE
 
 -- roses.txt --
 Roses are red, Violets are blue
 All I can do is thinking of you ...
 -- EOF --
 
-Usage:
-wes roses.txt
+$ wes roses.txt
 
 Output:
 -- roses.txt tokenizing statistics --
-Below you'll see the list of tokens found, followed by the line numbers where it was found, each one with their respective number of ocurrences in parenthesis
+Below you'll see the list of tokens found, 
+followed by the line numbers where they were found, 
+each one with their respective number 
+of ocurrences in parenthesis
 
 * All:  2(1)
 * I:  2(1)
@@ -46,14 +52,16 @@ Below you'll see the list of tokens found, followed by the line numbers where it
      3 lines(s) read
 -- End of execution --
 
-Command Line Options:
+COMMAND LINE OPTIONS
+
 --help	Print a help message and exit
 --verbose run with debug info
 
-Errors:
+ERRORS
+
 Wes can produce the following error messages to stderr
 
-File not found.
-Not enough memory for allocation.
+"File not found"
+"Not enough memory for allocation"
 
 Copyright 2005 Alejandro Ricoveri. All Rights Reserved Wrrrldwide.

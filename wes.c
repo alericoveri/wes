@@ -374,7 +374,7 @@ wes_readfile ()
     // Print the tree contents
     printf ("-- %s tokenizing statistics --\n", g_filename);
     printf ("Below you'll see the list of tokens found, followed by the line "
-        "numbers where it was found, each one with their respective number of "
+        "numbers where they were found, each one with their respective number of "
         "ocurrences in parenthesis\n\n");
     wes_log_tree(g_btree);
     printf ("\n%6d token(s) found\n", g_token_count);
