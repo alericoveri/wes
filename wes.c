@@ -1,4 +1,7 @@
 /*
+ *
+ * wes
+ * A simple b-tree tokenizer for educational purposes
  * Copyright © 2005 Alejandro Ricoveri <alejandroricoveri@gmail.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -369,11 +372,14 @@ wes_readfile ()
     }
 
     // Print the tree contents
-    printf("-- %s tokenizing statistics --\n", g_filename);
+    printf ("-- %s tokenizing statistics --\n", g_filename);
+    printf ("Below you'll see the list of tokens found, followed by the line "
+        "numbers where it was found, each one with their respective number of "
+        "ocurrences in parenthesis\n\n");
     wes_log_tree(g_btree);
-    printf("\n%6d token(s) found\n", g_token_count);
-    printf("%6d lines(s) read\n", line);
-    printf("-- End of execution --\n");
+    printf ("\n%6d token(s) found\n", g_token_count);
+    printf ("%6d lines(s) read\n", line);
+    printf ("-- End of execution --\n");
 
     // Do the house keeping!
     wes_token_delete(g_btree);
