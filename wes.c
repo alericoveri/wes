@@ -29,8 +29,11 @@
 /* Basic definitions */
 
 #define WES_ARG_VERBOSE 1 << 0
-#define WES_ARG_HELP 	1 << 1
+#define WES_ARG_HELP    1 << 1
 #define WES_ARG_VERSION 1 << 2
+
+#define wes_error(fmt, ...) \
+      __wes_err(__FILE__, __LINE__, fmt, ##__VA_ARGS__)
 
 #define WES_MAX_COLS        8192
 #define WES_MAX_LINES       UINT16_MAX
@@ -83,6 +86,23 @@ uint16_t g_token_count = 0;
 
 // A string holding the file name to be tokenized
 char *g_filename;
+
+/*
+ * Print error
+ */
+int
+__wes_err ( char *file, uint32_t line, char *fmt, ... )
+{
+    va_list ap;
+
+    va_start (ap, fmt);
+        fprintf (stderr, "Error at %s@%d: ", file, line);
+        vfprintf(stderr, fmt, ap);
+        fprintf (stderr, "\n");
+    va_end(ap);
+
+    return EXIT_FAILURE;
+}
 
 /*
  * Parse command line arguments
@@ -151,22 +171,28 @@ wes_version ()
 
 /*
  * Create a new line
+ * Returns a pointer to the new created line_t.
+ * Otherwise returns NULL
  */
 line_t *
 wes_line_create ( uint16_t line_number )
 {
+    // The new line
+     line_t *new_line;
+     
     // Allocate some mem for the new line
-    line_t *new_line = malloc(sizeof(line_t));
+    if ((new_line = (line_t *)malloc(sizeof(line_t))))
+    {
+        // Initial data might have ramdon bytes on it
+        // so, we set it up right, fill it with zeros
+        memset((void *)new_line, 0, sizeof(line_t));
 
-    // Initial data might have ramdon bytes on it
-    // so, we set it up right, fill it with zeros
-    memset((void *)new_line, 0, sizeof(line_t));
+        // Assign a number for this line
+        new_line->number = line_number;
 
-    // Assign a number for this line
-    new_line->number = line_number;
-
-    // Initial ocurrence for this line is 1
-    new_line->times = 1;
+        // Initial ocurrence for this line is 1
+        new_line->times = 1;
+    }
 
     // ... and we're done
     return new_line;
@@ -191,7 +217,7 @@ wes_line_delete (line_t *line)
 /*
  * Append a line to a token line list
  */
-void
+int
 wes_line_insert ( line_t **line_ptr, uint16_t line_number )
 {
     if (*line_ptr)
@@ -209,30 +235,40 @@ wes_line_insert ( line_t **line_ptr, uint16_t line_number )
 
     // At this point, the token has been found
     // for the first time on this line number
-    else *line_ptr = wes_line_create(line_number);
+    else if (!(*line_ptr = wes_line_create(line_number)))
+         return wes_error("Memory corruption!");
+    
+    // Line has been inserted succesfully
+    return 0;
 }
 
 /*
  * Create a new token
+ * Returns a pointer to the new created token_t.
+ * Otherwise returns NULL
  */
 token_t *
 wes_token_create ( char *token_str, uint16_t line_number )
 {
+    // The new token
+    token_t *new_token;
+    
     // Allocate some mem for the new token
-    token_t *new_token = malloc(sizeof(token_t));
+    if ((new_token = (token_t *)malloc(sizeof(token_t))))
+    {
+        // And set it up first
+        memset((void *)new_token, 0, sizeof(token_t));
 
-    // And set it up first
-    memset((void *)new_token, 0, sizeof(token_t));
+        // Copy the string to the new token
+        strcpy(new_token->str, token_str);
 
-    // Copy the string to the new token
-    strcpy(new_token->str, token_str);
+        // There's automatically a first ocurrence
+        // of this token on this line number
+        new_token->lines = wes_line_create (line_number);
 
-    // There's automatically a first ocurrence
-    // of this token on this line number
-    new_token->lines = wes_line_create (line_number);
-
-    // Another token to the global count!
-    g_token_count++;
+        // Another token to the global count!
+        g_token_count++;
+    }
 
     // ... and we're done
     return new_token;
@@ -265,7 +301,7 @@ wes_token_delete ( token_t *token )
 /*
  * Append a token to the token b-tree
  */
-void
+int
 wes_token_insert ( token_t **token_ptr, char *token_str, uint16_t line_number )
 {
     if (*token_ptr)
@@ -276,19 +312,23 @@ wes_token_insert ( token_t **token_ptr, char *token_str, uint16_t line_number )
             // Token already exists on the b-tree, so
             // we proceed to append a new line ocurrence
             // for this token
-            wes_line_insert (&((*token_ptr))->lines, line_number);
+            return wes_line_insert (&((*token_ptr))->lines, line_number);
 
         // Token may be not found here
         // Try to insert into whether its right or left wing
         else if (cmp < 0)
-            wes_token_insert(&(*token_ptr)->left, token_str, line_number);
+            return wes_token_insert(&(*token_ptr)->left, token_str, line_number);
         else
-            wes_token_insert(&(*token_ptr)->right, token_str, line_number);
+            return wes_token_insert(&(*token_ptr)->right, token_str, line_number);
     }
 
     // At this point, token doesn't exists
     // So, we create it ...
-    else *token_ptr = wes_token_create(token_str, line_number);
+    else if (!(*token_ptr = wes_token_create(token_str, line_number)))
+        return wes_error("Memory corruption!");
+    
+    // Token has been inserted succesfully
+    return 0;
 }
 
 /*
@@ -333,23 +373,6 @@ wes_log_results (uint16_t lines)
     printf ("\n%6d token(s) found\n", g_token_count);
     printf ("%6d line(s) read\n", lines);
     printf ("\n-- End of execution --\n");
-}
-
-/*
- * Print error
- */
-int
-wes_error ( char *fmt, ... )
-{
-    va_list ap;
-
-    va_start (ap, fmt);
-        fprintf (stderr, "Error: ");
-        vfprintf(stderr, fmt, ap);
-        fprintf (stderr, "\n");
-    va_end(ap);
-
-    return EXIT_FAILURE;
 }
 
 /*
