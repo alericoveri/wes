@@ -28,19 +28,22 @@
 
 /* Basic definitions */
 
+// Argument flags
 #define WES_ARG_VERBOSE 1 << 0
 #define WES_ARG_HELP    1 << 1
 #define WES_ARG_VERSION 1 << 2
 
+// wes_error as a variadic macro
 #define wes_error(fmt, ...) \
       __wes_err(__FILE__, __LINE__, fmt, ##__VA_ARGS__)
 
+// Limits
 #define WES_MAX_COLS        8192
 #define WES_MAX_LINES       UINT16_MAX
 #define WES_MAX_TOKEN_SIZE  128
-
 #define WES_TOKEN_DELIMIT " .,;-\n\t"
 
+// Packaging information
 #define WES_NAME "wes"
 #define WES_VER_MAJOR 0
 #define WES_VER_MINOR 1
@@ -57,8 +60,13 @@
  */
 typedef struct _line_t
 {
-    uint16_t number; // line number
-    uint8_t times; // Number of ocurrences
+    // line number
+    uint16_t number;
+    
+    // Number of ocurrences 
+    uint8_t times;
+    
+    // Next line in the list
     struct _line_t *next;
 } line_t;
 
@@ -68,10 +76,17 @@ typedef struct _line_t
  */
 typedef struct _token_t
 {
-    char str[WES_MAX_TOKEN_SIZE]; // string
-    line_t  *lines; // a list of the lines where this token was found
-    struct _token_t *left; // left wing children
-    struct _token_t *right; // right wing children
+    // The actual string
+    char *str;
+    
+    // a linked list of the lines where this token was found
+    line_t  *lines;
+    
+    // left wing children
+    struct _token_t *left;
+    
+     // right wing children
+    struct _token_t *right; 
 } token_t;
 
 // Token b-tree root
@@ -259,6 +274,13 @@ wes_token_create ( char *token_str, uint16_t line_number )
         // And set it up first
         memset((void *)new_token, 0, sizeof(token_t));
 
+        // Allocate some mem for the new string
+        if ( !(new_token->str = (char *) malloc(strlen(token_str)+1)) ) 
+        {
+            free(new_token);
+            return NULL;
+        }
+        
         // Copy the string to the new token
         strcpy(new_token->str, token_str);
 
@@ -292,6 +314,9 @@ wes_token_delete ( token_t *token )
 
         // Deletes the line list for this token
         wes_line_delete(token->lines);
+        
+        // Free mem taken by string
+        free(token->str);
 
         // ... And then, we can finally free this mem
         free(token); token = NULL;
